@@ -859,8 +859,12 @@ main {
 .custom-fetched-icon {
     filter: grayscale(100%) invert(1) brightness(1.5);
     mix-blend-mode: screen;
-    opacity: 0.9;
+    opacity: 0.55;
     object-fit: contain;
+}
+
+.tab-link:hover .custom-fetched-icon {
+    opacity: 0.95;
 }
 
 /* Modal Styles */
