@@ -207,6 +207,16 @@ document.addEventListener('DOMContentLoaded', () => {
         { url: 'https://news.ycombinator.com', name: 'HN', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><rect width="24" height="24" rx="2" /><path d="M13.44 13.91V20h-2.8v-6.09L6.15 4h3.18l2.67 6.13L14.67 4h3.18z" fill="#000" /></svg>' }
     ];
 
+    const loadUserTabs = () => {
+        const stored = localStorage.getItem('helium_user_tabs');
+        if (stored) {
+            try { return JSON.parse(stored); } catch (e) { }
+        }
+        return [...defaultTabs];
+    };
+
+    let userTabs = loadUserTabs();
+
     function updateClock() {
         const now = new Date();
         const h = String(now.getHours()).padStart(2, '0');
@@ -249,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const fragment = document.createDocumentFragment();
 
-        defaultTabs.forEach(item => {
+        userTabs.forEach(item => {
             const a = document.createElement('a');
             a.href = item.url;
             a.rel = "noopener noreferrer";
@@ -480,4 +490,81 @@ document.addEventListener('DOMContentLoaded', () => {
     updateClock();
     setInterval(updateClock, 1000);
     renderTray();
+
+    // === Settings Modal Logic ===
+    const modal = document.getElementById('settings-modal');
+    const closeBtn = document.getElementById('close-settings');
+    const saveBtn = document.getElementById('save-settings');
+    const addBtn = document.getElementById('add-shortcut');
+    const listEl = document.getElementById('shortcuts-list');
+    const canvasWrap = document.querySelector('.canvas-3d-entrance');
+
+    const openSettings = () => {
+        listEl.innerHTML = '';
+        userTabs.forEach(tab => {
+            addShortcutRow(tab.name, tab.url);
+        });
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    };
+
+    const addShortcutRow = (name = '', url = '') => {
+        const row = document.createElement('div');
+        row.className = 'shortcut-row';
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.placeholder = 'Name';
+        nameInput.className = 'sc-name';
+        nameInput.value = name;
+
+        const urlInput = document.createElement('input');
+        urlInput.type = 'text';
+        urlInput.placeholder = 'https://...';
+        urlInput.className = 'sc-url';
+        urlInput.value = url;
+
+        const rmBtn = document.createElement('button');
+        rmBtn.className = 'remove-btn';
+        rmBtn.title = 'Remove';
+        rmBtn.innerHTML = '&times;';
+        rmBtn.addEventListener('click', () => row.remove());
+
+        row.append(nameInput, urlInput, rmBtn);
+        listEl.appendChild(row);
+    };
+
+    addBtn.addEventListener('click', () => addShortcutRow());
+
+    const closeSettings = () => {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    };
+
+    closeBtn.addEventListener('click', closeSettings);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeSettings();
+    });
+
+    if (canvasWrap) canvasWrap.addEventListener('click', openSettings);
+
+    saveBtn.addEventListener('click', () => {
+        const rows = document.querySelectorAll('.shortcut-row');
+        const newTabs = [];
+        rows.forEach(row => {
+            const name = row.querySelector('.sc-name').value.trim();
+            let url = row.querySelector('.sc-url').value.trim();
+            if (name && url) {
+                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+                const def = defaultTabs.find(d => d.url === url);
+                const icon = def ? def.icon : undefined;
+                newTabs.push({ name, url, icon });
+            }
+        });
+        userTabs = newTabs;
+        localStorage.setItem('helium_user_tabs', JSON.stringify(userTabs));
+        renderTray();
+        closeSettings();
+    });
 });
