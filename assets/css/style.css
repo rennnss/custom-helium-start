@@ -855,6 +855,14 @@ main {
     }
 }
 
+/* Custom Uniform Icons */
+.custom-fetched-icon {
+    filter: grayscale(100%) invert(1) brightness(1.5);
+    mix-blend-mode: screen;
+    opacity: 0.9;
+    object-fit: contain;
+}
+
 /* Modal Styles */
 .modal-overlay {
     position: fixed;

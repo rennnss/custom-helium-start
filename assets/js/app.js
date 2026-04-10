@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const domain = new URL(item.url || 'http://localhost').hostname;
                 const img = document.createElement('img');
                 img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                img.className = 'rounded-full shadow-md opacity-0 transition-opacity duration-300 pointer-events-none icon-shortcut';
+                img.className = 'w-5 h-5 opacity-0 transition-opacity duration-300 pointer-events-none icon-shortcut custom-fetched-icon';
 
                 img.onload = () => img.classList.remove('opacity-0');
 
