@@ -11,7 +11,7 @@ window.CONFIG = {
         speedX: 0.0003,
         speedY: 0.0005,
         // How big the logo appears on screen
-        scale: 1.5
+        scale: 1.15
     },
     search: {
         // The default engine to use if you don't use a !bang
