@@ -240,62 +240,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const trackVisit = (url, name) => {
-        const normKey = normalizeDeep(url);
-        let history = SafeStorage.get('h_history', '[]');
-
-        const existingIndex = history.findIndex(i => normalizeDeep(i.url) === normKey);
-        if (existingIndex !== -1) {
-            history[existingIndex].count++;
-            history[existingIndex].lastVisit = Date.now();
-            if (url.length > history[existingIndex].url.length) history[existingIndex].url = url;
-            if (name && name.length > 3) history[existingIndex].name = name;
-        } else {
-            history.push({ url, name, count: 1, lastVisit: Date.now() });
-        }
-
-        history.sort((a, b) => (b.count - a.count) || (b.lastVisit - a.lastVisit));
-        SafeStorage.set('h_history', history.slice(0, 20));
-        renderTray();
+        // Tracking disabled to optimize shortcut navigation speed
     };
 
     const renderTray = () => {
-        const history = SafeStorage.get('h_history', '[]');
         if (!tabTray) return;
+        tabTray.innerHTML = '';
 
         const fragment = document.createDocumentFragment();
-        const items = [...history];
 
-        if (items.length < 4) {
-            defaultTabs.forEach(def => {
-                if (!items.find(i => normalizeDeep(i.url) === normalizeDeep(def.url)) && items.length < 4) {
-                    items.push({ ...def, count: 0, lastVisit: 0 });
-                }
-            });
-        }
-
-        items.sort((a, b) => (b.count - a.count) || (b.lastVisit - a.lastVisit));
-        const trayItems = items.slice(0, 4).map(item => {
-            const defTab = defaultTabs.find(d => normalizeDeep(d.url) === normalizeDeep(item.url));
-            if (defTab && defTab.icon) return { ...item, icon: defTab.icon };
-            return item;
-        });
-
-        if (trayItems.length === 0) {
-            const emptyMsg = document.createElement('div');
-            emptyMsg.className = 'flex-1 flex items-center justify-center py-4 text-[10px] text-white/20 tracking-[0.2em] uppercase';
-            emptyMsg.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="w-1.5 h-1.5 rounded-full bg-white/10 animate-pulse"></div>
-                    System Ready
-                    <div class="w-1.5 h-1.5 rounded-full bg-white/10 animate-pulse" style="animation-delay:0.5s"></div>
-                </div>
-            `;
-            tabTray.appendChild(emptyMsg);
-            return;
-        }
-
-        tabTray.innerHTML = '';
-        trayItems.forEach(item => {
+        defaultTabs.forEach(item => {
             const a = document.createElement('a');
             a.href = item.url;
             a.rel = "noopener noreferrer";
@@ -322,15 +276,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 a.appendChild(img);
             }
+
             const textSpan = document.createElement('span');
             textSpan.textContent = item.name;
             a.appendChild(textSpan);
 
-            a.addEventListener('click', () => {
-                if (!item.url.includes('{q}')) trackVisit(item.url, item.name);
-            });
             fragment.appendChild(a);
         });
+
         tabTray.appendChild(fragment);
     };
 
