@@ -19,49 +19,5 @@
     ],
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self'"
-    },
-    "theme": {
-        "colors": {
-            "frame": [
-                21,
-                38,
-                113
-            ],
-            "frame_inactive": [
-                21,
-                38,
-                113
-            ],
-            "toolbar": [
-                21,
-                38,
-                113
-            ],
-            "tab_text": [
-                255,
-                255,
-                255
-            ],
-            "tab_background_text": [
-                255,
-                255,
-                255
-            ],
-            "bookmark_text": [
-                255,
-                255,
-                255
-            ],
-            "ntp_background": [
-                21,
-                38,
-                113
-            ],
-            "ntp_text": [
-                255,
-                255,
-                255
-            ]
-        }
     }
 }
